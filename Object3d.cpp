@@ -336,7 +336,7 @@ void Object3d::LoadTexture()
 	ScratchImage scratchImg{};
 
 	// WICテクスチャのロード
-	result = LoadFromWICFile( L"Resources/tex1.png", WIC_FLAGS_NONE, &metadata, scratchImg);
+	result = LoadFromWICFile( L"Resources/texture.png", WIC_FLAGS_NONE, &metadata, scratchImg);
 	assert(SUCCEEDED(result));
 
 	ScratchImage mipChain{};
@@ -405,7 +405,7 @@ void Object3d::CreateModel()
 	// ファイルストリーム
 	std::ifstream file;
 	// .objファイルを開く
-	file.open("Resources/triangle/triangle.obj");
+	file.open("Resources/triangle_tex/triangle_tex.obj");
 	// ファイルオープン失敗をチェック
 	if (file.fail()) {
 		assert(0);
@@ -413,7 +413,7 @@ void Object3d::CreateModel()
 
 	vector<XMFLOAT3>positions;   // 頂点座標
 	vector<XMFLOAT3>normals;     // 法線ベクトル
-	vector<XMFLOAT3>texcoords;   // テクスチャUV
+	vector<XMFLOAT2>texcoords;   // テクスチャUV
 	// 1行ずつ読み込む
 	string line;
 	while (getline(file, line)) {
@@ -435,9 +435,30 @@ void Object3d::CreateModel()
 			// 座標データを追加
 			positions.emplace_back(position);
 			// 頂点データを追加
-			VertexPosNormalUv vertex{};
+			/*VertexPosNormalUv vertex{};
 			vertex.pos = position;
-			vertices.emplace_back(vertex);
+			vertices.emplace_back(vertex);*/
+		}
+		// 先頭文字がvtならテクスチャ
+		if (key == "vt") {
+			// U,V成分読み込み
+			XMFLOAT2 texcoord{};
+			line_stream >> texcoord.x;
+			line_stream >> texcoord.y;
+			// V方向反転
+			texcoord.y = 1.0f - texcoord.y;
+			// テクスチャ座標に追加
+			texcoords.emplace_back(texcoord);
+		}
+		// 先頭文字がvnなら法線ベクトル
+		if (key == "vn") {
+			// X,Y,Z成分読み込み
+			XMFLOAT3 normal{};
+			line_stream >> normal.x;
+			line_stream >> normal.y;
+			line_stream >> normal.z;
+			// 法線ベクトルデータに追加
+			normals.emplace_back(normal);
 		}
 		// 先頭文字列がfならポリゴン（三角形）
 		if (key == "f") {
@@ -446,13 +467,23 @@ void Object3d::CreateModel()
 			while (getline(line_stream, index_string, ' ')) {
 				// 頂点インデックス1個分の文字列をストリームに変換して解析しやすくする
 				std::istringstream index_stream(index_string);
-				unsigned short indexPosition;
+				unsigned short indexPosition,indexNormal,indexTexcoord;
 				index_stream >> indexPosition;
+				index_stream.seekg(1, ios_base::cur);
+				index_stream >> indexTexcoord;
+				index_stream.seekg(1, ios_base::cur);
+				index_stream >> indexNormal;
 				// 頂点インデクスに追加
-				indices.emplace_back(indexPosition - 1);
+				VertexPosNormalUv vertex{};
+				vertex.pos = positions[indexPosition - 1];
+				vertex.normal = normals[indexNormal - 1];
+				vertex.uv = texcoords[indexTexcoord - 1];
+				vertices.emplace_back(vertex);
+				// インデックスデータの追加
+				indices.emplace_back((unsigned short)indices.size());
 			}
 		}
-
+		
 	}
 	// ファイルを閉じる
 	file.close();
