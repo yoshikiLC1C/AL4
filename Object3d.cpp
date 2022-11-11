@@ -423,7 +423,7 @@ void Object3d::CreateModel()
 	std::ifstream file;
 	// .objファイルを開く
 	//file.open("Resources/triangle_mat/triangle_,mat.obj");
-	const string modelname = "triangle_mat";
+	const string modelname = "enemyBird";
 	const string filename = modelname + ".obj";
 	const string directoryPath = "Resources/" + modelname + "/";
 	file.open(directoryPath + filename);
@@ -690,6 +690,8 @@ void Object3d::Update()
 {
 	HRESULT result;
 	XMMATRIX matScale, matRot, matTrans;
+
+	XMFLOAT3 scale = { 1,1,1 };
 
 	// スケール、回転、平行移動行列の計算
 	matScale = XMMatrixScaling(scale.x, scale.y, scale.z);

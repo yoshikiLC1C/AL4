@@ -11,6 +11,7 @@ GameScene::~GameScene()
 {
 	delete spriteBG;
 	delete object3d;
+	delete object3d2;
 	delete sprite1;
 	delete sprite2;
 }
@@ -29,11 +30,11 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input)
 	// デバッグテキスト初期化
 	debugText.Initialize(debugTextTexNumber);
 
-	// テクスチャ読み込み
-	Sprite::LoadTexture(1, L"Resources/background.png");
+	//// テクスチャ読み込み
+	//Sprite::LoadTexture(1, L"Resources/background.png");
 
-	// テクスチャ2番に読み込み
-	Sprite::LoadTexture(2, L"Resources/texture.png");
+	//// テクスチャ2番に読み込み
+	//Sprite::LoadTexture(2, L"Resources/texture.png");
 
 	// 座標{0,0}に、テクスチャ2番のスプライトを生成
 	sprite1 = Sprite::Create(2, { 0,0 });
@@ -45,6 +46,9 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input)
 	// 3Dオブジェクト生成
 	object3d = Object3d::Create();
 	object3d->Update();
+
+	object3d2 = Object3d::Create();
+	object3d2->Update();
 }
 
 void GameScene::Update()
@@ -113,6 +117,7 @@ void GameScene::Draw()
 
 	// 3Dオブクジェクトの描画
 	object3d->Draw();
+	object3d2->Draw();
 
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
