@@ -423,7 +423,7 @@ void Object3d::CreateModel()
 	std::ifstream file;
 	// .objファイルを開く
 	//file.open("Resources/triangle_mat/triangle_,mat.obj");
-	const string modelname = "triangle_mat";
+	const string modelname = "enemyBird";
 	const string filename = modelname + ".obj";
 	const string directoryPath = "Resources/" + modelname + "/";
 	file.open(directoryPath + filename);
@@ -655,8 +655,12 @@ void Object3d::LoadMaterial(
 
 bool Object3d::Initialize()
 {
+
+	//worldTransform_.scale_ = {}
+
 	// nullptrチェック
 	assert(device);
+
 
 	// ヒーププロパティ
 	CD3DX12_HEAP_PROPERTIES heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
